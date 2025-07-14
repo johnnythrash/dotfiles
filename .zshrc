@@ -9,7 +9,7 @@ fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/chris/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -108,18 +108,25 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias mkcd='mkdir -pv && cd -v'
-alias ..='cd ..'
-alias sssh='ssh zippy@media-storage'
-
-
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
- export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+export NVM_DIR="$HOME/.nvm"
+
+# Detect Homebrew install
+if [ -s "/opt/homebrew/opt/nvm/nvm.sh" ]; then
+  # macOS Homebrew path
+  . "/opt/homebrew/opt/nvm/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \
+    . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+elif [ -s "$NVM_DIR/nvm.sh" ]; then
+  # Standard curl install
+  . "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \
+    . "$NVM_DIR/bash_completion"
+fi
+
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -151,3 +158,26 @@ if [ -d "$DOTFILES_DIR/.git" ]; then
   fi
   cd - > /dev/null
 fi
+
+# ---------- ZSH Completions Fix ----------
+autoload -Uz compinit
+
+# Filter broken completion files
+COMPLETION_DIRS=(
+  /usr/share/zsh/site-functions
+  /usr/local/share/zsh/site-functions
+  /usr/share/zsh/vendor-completions
+)
+
+for dir in "${COMPLETION_DIRS[@]}"; do
+  if [ -d "$dir" ]; then
+    fpath+=("$dir")
+  fi
+done
+
+# Clean bad cached completions
+[ -f ~/.zcompdump ] && rm -f ~/.zcompdump
+
+# Don’t crash if a file is missing (like _docker)
+compinit -C
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
