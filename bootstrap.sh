@@ -45,10 +45,19 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
   git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
 fi
 
+# command-not-found (linux only)
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  sudo apt install -y command-not-found
+  sudo update-command-not-found
+else
+  echo "⚠️  Skipping 'command-not-found' (not available on macOS)"
+fi
+
 # zsh-syntax-highlighting
 if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
   echo "⬇️  Installing zsh-syntax-highlighting..."
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 fi
+
 
 echo "✅ Bootstrap complete. Reload your shell or run 'source ~/.zshrc'"
