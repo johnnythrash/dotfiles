@@ -40,3 +40,6 @@ nnoremap <C-s> :w<CR>
 inoremap <C-s> <Esc>:w<CR>i
 nnoremap <C-q> :q<CR>
 nnoremap <C-a> ggVG         " Ctrl+A to select all
+
+"--- FzF
+set rtp+=/opt/homebrew/opt/fzf

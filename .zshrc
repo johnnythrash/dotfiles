@@ -188,3 +188,6 @@ done
 # Don’t crash if a file is missing (like _docker)
 compinit -C
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# fzf 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
