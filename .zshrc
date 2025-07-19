@@ -18,7 +18,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-#ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -118,6 +118,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias fix-completion='rm -f ~/.zcompdump; compinit -C'
 
 export NVM_DIR="$HOME/.nvm"
 
@@ -169,7 +170,7 @@ fi
 # ---------- ZSH Completions Fix ----------
 autoload -Uz compinit
 
-# Filter broken completion files
+# Include system completion directories if they exist
 COMPLETION_DIRS=(
   /usr/share/zsh/site-functions
   /usr/local/share/zsh/site-functions
@@ -177,17 +178,14 @@ COMPLETION_DIRS=(
 )
 
 for dir in "${COMPLETION_DIRS[@]}"; do
-  if [ -d "$dir" ]; then
-    fpath+=("$dir")
-  fi
+  [[ -d "$dir" ]] && fpath+=("$dir")
 done
 
-# Clean bad cached completions
-[ -f ~/.zcompdump ] && rm -f ~/.zcompdump
-
-# Don’t crash if a file is missing (like _docker)
+# Initialize completions safely (skip broken ones)
 compinit -C
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# fzf 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Load nvm bash completion if available
+[[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+
+# fzf integration
+[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
