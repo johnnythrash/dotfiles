@@ -81,7 +81,15 @@ export ZSH="$HOME/.oh-my-zsh"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-plugins=(git autojump virtualenv)
+plugins=(
+  git
+  autojump
+  virtualenv
+  zsh-autosuggestions
+  fzf
+  command-not-found
+	zsh-syntax-highlighting
+)
 
 source $ZSH/oh-my-zsh.sh
 
