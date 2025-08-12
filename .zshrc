@@ -135,6 +135,17 @@ elif [ -s "$NVM_DIR/nvm.sh" ]; then
     . "$NVM_DIR/bash_completion"
 fi
 
+# aliases
+mktouch() {
+  for file in "$@"; do
+    mkdir -p "$(dirname "$file")" && touch "$file"
+  done
+}
+
+# Completion: reuse touch's completion for mktouch
+compdef mktouch=touch
+
+
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
