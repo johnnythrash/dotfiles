@@ -178,6 +178,9 @@ if [ -d "$DOTFILES_DIR/.git" ]; then
   cd - > /dev/null
 fi
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  alias autoforgex='autoforge --config ~/autoforge.conf'
+fi
 # ---------- ZSH Completions Fix ----------
 autoload -Uz compinit
 
