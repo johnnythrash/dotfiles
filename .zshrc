@@ -162,6 +162,52 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+# pipe clipboard
+case "$OSTYPE" in
+  darwin*)  # macOS
+    alias copy='pbcopy'
+    alias paste='pbpaste'
+    ;;
+  linux*)
+    # Linux – prefer wl-copy/xclip/xsel depending on what's available
+    if command -v wl-copy >/dev/null 2>&1; then
+      alias copy='wl-copy'
+      alias paste='wl-paste'
+    elif command -v xclip >/dev/null 2>&1; then
+      alias copy='xclip -selection clipboard'
+      alias paste='xclip -selection clipboard -o'
+    elif command -v xsel >/dev/null 2>&1; then
+      alias copy='xsel --clipboard --input'
+      alias paste='xsel --clipboard --output'
+    fi
+    ;;
+  msys*|cygwin*|win*)
+    # Git Bash or WSL on Windows
+    if command -v clip.exe >/dev/null 2>&1; then
+      alias copy='clip.exe'
+      alias paste='powershell.exe Get-Clipboard'
+    fi
+    ;;
+esac
+
+# copy command and output
+copywcommand() {
+  local cmd="$*"
+  if [ -z "$cmd" ]; then
+    echo "Usage: copywcommand <command>" >&2
+    return 1
+  fi
+
+  # Run the command and capture its output
+  local output
+  output="$(eval "$cmd" 2>&1)"
+  
+  # Combine command + output
+  printf "%s\n\n%s" "$cmd" "$output" | copy
+
+  # Print result back to terminal
+  echo "$output"
+}
 
 # Auto-update dotfiles if upstream changed
 DOTFILES_DIR="$HOME/dotfiles"
