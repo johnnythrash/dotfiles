@@ -45,12 +45,12 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
   git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
 fi
 
-# command-not-found (linux only)
+# command-not-found (Ubuntu only)
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  sudo apt install -y command-not-found
-  sudo update-command-not-found
+  echo "📦 Installing command-not-found (if available)..."
+  sudo apt install -y command-not-found || true
 else
-  echo "⚠️  Skipping 'command-not-found' (not available on macOS)"
+  echo "⚠️ Skipping command-not-found (not available on macOS)"
 fi
 
 # zsh-syntax-highlighting
