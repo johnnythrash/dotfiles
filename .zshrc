@@ -93,7 +93,7 @@ plugins=(
   zsh-autosuggestions
   fzf
   command-not-found
-	zsh-syntax-highlighting
+  zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -195,7 +195,15 @@ case "$OSTYPE" in
     ;;
 esac
 
-# copy command and output
+# OSC52 clipboard helper (works over SSH in supporting terminals)
+copy_osc52() {
+  # Read stdin, base64-encode, strip newlines, emit OSC52 escape
+  local data
+  data=$(base64 | tr -d '\r\n')
+  printf '\e]52;c;%s\a' "$data"
+}
+
+# copy command and output (SSH-safe via OSC52)
 copywcommand() {
   local cmd="$*"
   if [ -z "$cmd" ]; then
@@ -206,9 +214,14 @@ copywcommand() {
   # Run the command and capture its output
   local output
   output="$(eval "$cmd" 2>&1)"
-  
-  # Combine command + output
-  printf "%s\n\n%s" "$cmd" "$output" | copy
+
+  # Try OSC52 first (works over SSH in most terminals),
+  # fall back to `copy` alias if available.
+  if [[ -t 1 && -n "$TERM" && "$TERM" != "dumb" ]]; then
+    printf "%s\n\n%s" "$cmd" "$output" | copy_osc52
+  elif command -v copy >/dev/null 2>&1; then
+    printf "%s\n\n%s" "$cmd" "$output" | copy
+  fi
 
   # Print result back to terminal
   echo "$output"
@@ -232,6 +245,7 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then
   alias autoforgex='autoforge --config ~/autoforge.conf'
 fi
+
 # ---------- ZSH Completions Fix ----------
 autoload -Uz compinit
 
